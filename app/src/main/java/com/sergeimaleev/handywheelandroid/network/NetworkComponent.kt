@@ -1,19 +1,24 @@
 package com.sergeimaleev.handywheelandroid.network
 
+import android.util.Log
+import java.io.IOException
 import java.io.PrintWriter
 import java.net.Socket
-import java.util.concurrent.Executors
 
 class NetworkComponent {
 
     private var socket: Socket? = null
     private var printWriter: PrintWriter? = null
+    //private var outputStreamWriter: OutputStreamWriter? = null
 
+    @Synchronized
     private fun setup(ip: String, port: Int) {
         socket = Socket(ip, port)
         printWriter = PrintWriter(socket!!.getOutputStream(), true)
+        //outputStreamWriter = OutputStreamWriter(socket!!.getOutputStream())
     }
 
+    @Synchronized
     fun setupBackground(ip: String, port: Int) {
         Thread {
             setup(ip, port)
@@ -22,11 +27,18 @@ class NetworkComponent {
     }
 
     fun sendMsg(msg: String) {
-        printWriter?.println(msg)
+        printWriter!!.println(msg)
+        Log.d("sendMSG", "sendMsg: " + msg)
+        //outputStreamWriter?.write(msg)
+        //outputStreamWriter?.flush()
     }
 
     fun terminate() {
-        printWriter?.flush()
-        socket?.close()
+        try {
+            printWriter?.flush()
+            socket?.close()
+        } catch (_: IOException) {
+
+        }
     }
 }
