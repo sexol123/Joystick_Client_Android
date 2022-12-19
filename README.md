@@ -1,4 +1,4 @@
-# -Joystick_Client_Android
+# Joystick_Client_Android
 
 #Study project
 
