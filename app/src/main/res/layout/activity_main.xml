@@ -162,7 +162,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"
-        app:constraint_referenced_ids="btnSelect, btnStartGame,btnDown, btnA, btnB, btnZ, btnX, btnLeft, btnRight, btnUp"
+        app:constraint_referenced_ids="btnRestartApp, btnSelect, btnStartGame,btnDown, btnA, btnB, btnZ, btnX, btnLeft, btnRight, btnUp"
         tools:visibility="visible" />
 
     <Button
