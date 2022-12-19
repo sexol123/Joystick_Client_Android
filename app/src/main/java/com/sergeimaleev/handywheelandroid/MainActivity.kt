@@ -2,11 +2,11 @@ package com.sergeimaleev.handywheelandroid
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.os.Bundle
-import android.os.Vibrator
+import android.os.*
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.sergeimaleev.handywheelandroid.Utils.getDrawableFromRes
 import com.sergeimaleev.handywheelandroid.databinding.ActivityMainBinding
 import com.sergeimaleev.handywheelandroid.network.NetworkComponent
 import java.util.concurrent.Executors
@@ -18,6 +18,9 @@ const val KEY_LEFT_ARROW = 37;
 const val KEY_UP_ARROW = 38;
 const val KEY_RIGHT_ARROW = 39;
 const val KEY_DOWN_ARROW = 40;
+const val KEY_A_FIRE = 65;
+const val KEY_B_FIRE = 66;
+const val KEY_X_FIRE = 88;
 const val KEY_Z_FIRE = 90;
 const val KEY_START_ENTER = 13;
 const val KEY_SELECT_SHIFT = 16;
@@ -67,8 +70,28 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setupJoystickButtons() {
         with(binding) {
-
-            btnFire.apply {
+            btnA.apply {
+                setImageBitmap(Utils.textAsBitmap(Char(KEY_A_FIRE).toString(), 70f, Color.BLACK))
+                setOnTouchListener { _, event ->
+                    onTouchButton(KEY_A_FIRE, event.action)
+                    true
+                }
+            }
+            btnB.apply {
+                setImageBitmap(Utils.textAsBitmap(Char(KEY_B_FIRE).toString(), 70f, Color.BLACK))
+                setOnTouchListener { _, event ->
+                    onTouchButton(KEY_B_FIRE, event.action)
+                    true
+                }
+            }
+            btnX.apply {
+                setImageBitmap(Utils.textAsBitmap(Char(KEY_X_FIRE).toString(), 70f, Color.BLACK))
+                setOnTouchListener { _, event ->
+                    onTouchButton(KEY_X_FIRE, event.action)
+                    true
+                }
+            }
+            btnZ.apply {
                 setImageBitmap(Utils.textAsBitmap(Char(KEY_Z_FIRE).toString(), 70f, Color.BLACK))
                 setOnTouchListener { _, event ->
                     onTouchButton(KEY_Z_FIRE, event.action)
@@ -76,46 +99,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             btnLeft.apply {
-                setImageBitmap(
-                    Utils.textAsBitmap(
-                        Char(KEY_LEFT_ARROW).toString(),
-                        70f,
-                        Color.BLACK
-                    )
-                )
+                setImageDrawable(getDrawableFromRes(R.drawable.ic_button_left))
                 setOnTouchListener { _, event ->
                     onTouchButton(KEY_LEFT_ARROW, event.action)
                     true
                 }
             }
             btnUp.apply {
-                setImageBitmap(Utils.textAsBitmap(Char(KEY_UP_ARROW).toString(), 70f, Color.BLACK))
+                setImageDrawable(getDrawableFromRes(R.drawable.ic_button_up))
                 setOnTouchListener { _, event ->
                     onTouchButton(KEY_UP_ARROW, event.action)
                     true
                 }
             }
             btnRight.apply {
-                setImageBitmap(
-                    Utils.textAsBitmap(
-                        Char(KEY_RIGHT_ARROW).toString(),
-                        70f,
-                        Color.BLACK
-                    )
-                )
+                setImageDrawable(getDrawableFromRes(R.drawable.ic_button_right))
                 setOnTouchListener { _, event ->
                     onTouchButton(KEY_RIGHT_ARROW, event.action)
                     true
                 }
             }
             btnDown.apply {
-                setImageBitmap(
-                    Utils.textAsBitmap(
-                        Char(KEY_DOWN_ARROW).toString(),
-                        70f,
-                        Color.BLACK
-                    )
-                )
+                setImageDrawable(getDrawableFromRes(R.drawable.ic_button_down))
                 setOnTouchListener { _, event ->
                     onTouchButton(KEY_DOWN_ARROW, event.action)
                     true
@@ -138,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                 executors.submit {
                     networkComponent.sendMsg("$keyCode-$action")
                 }
-                vibrator!!.vibrate(1)
+                vibrate()
             }
             MotionEvent.ACTION_UP -> {
                 executors.submit {
@@ -148,7 +153,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupVibrator() = getSystemService(VIBRATOR_SERVICE) as? Vibrator
+    private fun setupVibrator(): Vibrator? {
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = getSystemService(VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+            vibratorManager?.defaultVibrator
+        } else {
+            getSystemService(VIBRATOR_SERVICE) as? Vibrator
+        }
+        return vibrator
+    }
+
+    private fun vibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+        } else {
+            vibrator?.vibrate(2)
+        }
+    }
 
 
     /* private fun setupGyroscopeComponent() {

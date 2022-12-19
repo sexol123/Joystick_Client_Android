@@ -1,8 +1,11 @@
 package com.sergeimaleev.handywheelandroid
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
+import androidx.core.content.res.ResourcesCompat
 import kotlin.math.roundToInt
 
 
@@ -20,5 +23,10 @@ object Utils {
         val canvas = Canvas(image)
         canvas.drawText(text, 0F, baseline, paint)
         return image
+    }
+
+    fun Context?.getDrawableFromRes(resId: Int): Drawable? {
+        if (this == null) return null
+        return ResourcesCompat.getDrawable(resources, resId, theme)
     }
 }
